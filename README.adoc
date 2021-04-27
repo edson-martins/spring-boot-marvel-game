@@ -1,0 +1,164 @@
+// settings:
+:idprefix:
+:idseparator: -
+:source-language: java
+:language: {source-language}
+ifndef::env-github[:icons: font]
+ifdef::env-github[]
+:status:
+:outfilesuffix: .adoc
+:caution-caption: :fire:
+:important-caption: :exclamation:
+:note-caption: :paperclip:
+:tip-caption: :bulb:
+:warning-caption: :warning:
+endif::[]
+
+image:https://github.com/edson-martins/spring-boot-marvel-game/actions/workflows/maven.yml/badge.svg[Java CI with Maven]
+image:https://github.com/edson-martins/spring-boot-marvel-game/actions/workflows/codeql-analysis.yml/badge.svg[CodeQL]
+
+== Spring Boot Marvel Game
+Spring Boot Marvel Game is a Java 11+, Spring Boot (version 2.4.4) application accessing the Marvel API’s available at *https://developer.marvel.com[Marvel Developer Portal]*, exposing REST services to fetch all characters, retrieve a character with an Id and play the game.
+The idea is only provide a Java code with logics used to access external APIs and provide a functionality as a game and others to retrieve data.
+
+Playing character arena game achieve the following:
+
+. Read in 2 superhero names and a seed value between 1-10.
+. Retrieve the "description" of each hero from the "character" endpoint of the api. 
+. Search the word in the position of the description corresponding to the seed value. As an example, if the provided seed value were 3, will choose the 3rd word in the description for each character.
+. The hero with the most characters in their word at that position is the winner, but if the word is either "gamma" or "radioactive" that character automatically wins.
+. Return a Json payload representing the Winner.
+
+=== Features
+- Java 11+
+- Spring Boot 2.4.4
+- Spring MVC 2.4.4
+- Spring Cloud 2020.0.2
+- Spring Cloud Vault 3.0.2
+- Mapstruct 1.4.2.Final
+- Hashicorp Vault 1.7.0
+
+=== Setup
+. Create a new account at https://developer.marvel.com. You will need to generate the keys that will be used in this game. 
+. Install Hashicorp Vault in your machine. Take a look the website https://www.vaultproject.io
+. After you install Vault, launch it in a console window the command below to starts up a server process.
+.. $ vault server --dev --dev-root-token-id="00000000-0000-0000-0000-000000000000"
+. Keep the server vault running and in a new window/tab, execute:
+.. $ export VAULT_TOKEN="00000000-0000-0000-0000-000000000000"
+.. $ export VAULT_ADDR="http://127.0.0.1:8200"
+.. $ vault kv put secret/marvel public_key=<your own marvel public key from marvel portal> private_key=<your own private key from marvel portal>
+
+=== Architecture
+image:https://github.com/edson-martins/spring-boot-marvel-game/blob/main/doc/img/GameArchitecture.png[Game Architecture]
+
+=== REST Methods
+
+[%header%footer%autowidth%]
+|===
+|# |Method |URL                        |Request  |Response                  | Description
+|1 |GET    |/v1/arena/characters/all   |N/A      |ResponseEntity<RootDTO>   | Retrieve all characters
+|2 |GET    |/v1/arena/characters/{id}  |Long id  |ResponseEntity<RootDTO>   | Retrieve a character based in the id
+|3 |GET    |/v1/arena/games/play       |ArenaDTO |ResponseEntity<WinnerDTO> | Play game
+|===
+
+==== #1 - /v1/arena/characters/all
+
+. Success Response:
+** Code 200
+** Content: 
+[source, json] 
+{
+  "code": 200,
+  "status": "Ok",
+  "copyright": "© 2021 MARVEL",
+  "attributionText": "Data provided by Marvel. © 2021 MARVEL",
+  "attributionHTML": "<a href=\"http://marvel.com\">Data provided by Marvel. © 2021 MARVEL</a>",
+  "etag": "e0ec184f14a513dbc7a75939ac8dd1933cda7b30",
+  "data": {
+    "offset": 0,
+    "limit": 20,
+    "total": 1493,
+    "count": 20,
+    "results": [
+      {
+        "id": 1011334,
+        "name": "3-D Man",
+        "description": "",
+        "modified": "2014-04-29T18:18:17.000+00:00",
+        "thumbnail": {
+          "path": "http://i.annihil.us/u/prod/marvel/i/mg/c/e0/535fecbbb9784",
+          "extension": "jpg"
+        }
+      }
+      ...
+    ]
+  }
+}
+
+==== #2 - /v1/arena/characters/{id}
+. Success Response:
+** Code 200
+** Content: 
+[source, json] 
+{
+  "code": 200,
+  "status": "Ok",
+  "copyright": "© 2021 MARVEL",
+  "attributionText": "Data provided by Marvel. © 2021 MARVEL",
+  "attributionHTML": "<a href=\"http://marvel.com\">Data provided by Marvel. © 2021 MARVEL</a>",
+  "etag": "e0ec184f14a513dbc7a75939ac8dd1933cda7b30",
+  "data": {
+    "offset": 0,
+    "limit": 20,
+    "total": 1493,
+    "count": 20,
+    "results": [
+      {
+        "id": 1011334,
+        "name": "3-D Man",
+        "description": "",
+        "modified": "2014-04-29T18:18:17.000+00:00",
+        "thumbnail": {
+          "path": "http://i.annihil.us/u/prod/marvel/i/mg/c/e0/535fecbbb9784",
+          "extension": "jpg"
+        }
+      }
+    ]
+  }
+}
+
+. Request Sample
+** /v1/arena/characters/1011334
+
+==== #3 - /v1/arena/games/play
+
+. Request Sample:
+** Content: 
+[source, json] 
+{
+   "seed": 4,
+   "superheros": [
+   {
+      "name": "Spider-Man"
+   },
+   {
+      "name": "Hulk"
+   }
+  ]
+}
+
+. Success Response:
+** Code 200
+** Content: 
+[source, json] 
+{
+  "id": 1009610,
+  "name": "Spider-Man",
+  "description": "Bitten by a radioactive spider, high school student Peter Parker gained the speed, strength and powers of a spider. Adopting the name Spider-Man, Peter hoped to start a career using his new abilities. Taught that with great power comes great responsibility, Spidey has vowed to use his powers to help people.",
+  "modified": "2020-07-21T14:30:10.000+00:00",
+  "thumbnail": {
+    "path": "http://i.annihil.us/u/prod/marvel/i/mg/3/50/526548a343e4b",
+    "extension": "jpg"
+  },
+  "word": "radioactive"
+}

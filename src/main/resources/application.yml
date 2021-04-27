@@ -1,0 +1,12 @@
+spring:
+  cloud:
+    vault:
+      authentication: token
+      token: 00000000-0000-0000-0000-000000000000
+      scheme: http
+      host: localhost
+      port: 8200
+
+arena:
+  api:
+    url: http://gateway.marvel.com/v1/public/characters
