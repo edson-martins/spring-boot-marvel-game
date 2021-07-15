@@ -16,6 +16,7 @@ endif::[]
 
 image:https://github.com/edson-martins/spring-boot-marvel-game/actions/workflows/maven.yml/badge.svg[Java CI with Maven]
 image:https://github.com/edson-martins/spring-boot-marvel-game/actions/workflows/codeql-analysis.yml/badge.svg[CodeQL]
+image:https://sonarcloud.io/api/project_badges/measure?project=edson-martins_spring-boot-marvel-game&metric=alert_status[SonarCloud]
 
 == Spring Boot Marvel Game
 Spring Boot Marvel Game is a Java 11+, Spring Boot (version 2.4.4) application accessing the Marvel API’s available at *https://developer.marvel.com[Marvel Developer Portal]*, exposing REST services to fetch all characters, retrieve a character with an Id and play the game.
