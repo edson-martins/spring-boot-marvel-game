@@ -19,7 +19,7 @@
 		<org.mapstruct.version>1.4.2.Final</org.mapstruct.version>
 		<lombok.version>1.18.16</lombok.version>
 		<spring-cloud.version>2020.0.2</spring-cloud.version>		
-		<sonar.projectKey>edson-martins_spring-boot-hfinitializr</sonar.projectKey>
+		<sonar.projectKey>edson-martins_spring-boot-marvel-game</sonar.projectKey>
 		<sonar.organization>edson-martins</sonar.organization>
 		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 	</properties>
